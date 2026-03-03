@@ -3,17 +3,17 @@
     <div class="col-md-9">
       <div class="form-group">
         <label for="name">Table Name</label>
-        <input type="text" v-model="name" autocomplete="off" />
+        <input type="text" v-model="name" class="form-control" autocomplete="off" />
       </div>
     </div>
 
     <div class="col-md-3">
-      <div class="form-group">
+      <div class="form-group d-flex">
         <button
-          class="button button-primary button-s table_settings_btn mr-5"
+          class="button button-primary button-s table_settings_btn me-2"
           role="button"
-          data-toggle="modal"
-          :data-target="'#settings-modal-' + index"
+          data-bs-toggle="modal"
+          :data-bs-target="'#settings-modal-' + index"
           v-if="name !== ''"
         >
           Settings
@@ -35,7 +35,7 @@
 
 <script>
 import { slug } from "../../../utils/helpers";
-import SettingsModal from "./settingsModal";
+import SettingsModal from "./settingsModal.vue";
 
 export default {
   props: {
@@ -69,7 +69,7 @@ export default {
           id: "includes_crud_admin_file_" + this.index,
           replace: true,
         })
-        .then((response) => {
+        .then(() => {
           //delete list table php file
           this.$store.dispatch("addNewFileInFileTree", {
             id: "includes_crud_admin_list_file_" + this.index,
@@ -95,6 +95,9 @@ export default {
 
 <style scoped>
 .table_settings_btn {
+  margin-top: 30px;
+}
+.del-btn {
   margin-top: 30px;
 }
 </style>

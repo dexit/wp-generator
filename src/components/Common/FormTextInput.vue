@@ -1,15 +1,13 @@
 <template>
-  <div class="form-group">
-    <label for="name">{{ label }}</label>
-    <span class="form-help" v-if="helptext !== ''">{{ helptext }}</span>
+  <div class="form-group mb-3">
+    <label v-if="label">{{ label }}</label>
+    <span class="form-text d-block mb-1" v-if="helptext !== ''">{{ helptext }}</span>
     <input
       type="text"
-      :name="name !== '' ? name : this.strRandom()"
-      :id="name !== '' ? name : this.strRandom()"
-      :class="className"
+      class="form-control"
       :placeholder="placeholder"
-      :value="textvalue"
-      @input="$emit('input', $event.target.value)"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
       :disabled="disabled"
       autocomplete="off"
     />
@@ -19,52 +17,12 @@
 <script>
 export default {
   props: {
-    label: {
-      type: String,
-      default: "",
-    },
-    name: {
-      type: String,
-      default: "",
-    },
-    placeholder: {
-      type: String,
-      default: "",
-    },
-    textvalue: {
-      type: [String, Number],
-      default: "",
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    className: {
-      type: String,
-      default: "form-control",
-    },
-    helptext: {
-      type: String,
-      default: "",
-    },
+    label: { type: String, default: "" },
+    placeholder: { type: String, default: "" },
+    modelValue: { type: [String, Number], default: "" },
+    disabled: { type: Boolean, default: false },
+    helptext: { type: String, default: "" },
   },
-  data() {
-    return {
-      inputData: "",
-    };
-  },
-  methods: {
-    strRandom() {
-      return this.$root.strRandom();
-    },
-  },
+  emits: ['update:modelValue']
 };
 </script>
-
-<style scoped>
-.form-wpgen .form-help {
-  display: block;
-  margin-bottom: 10px;
-  margin-top: -4px;
-}
-</style>

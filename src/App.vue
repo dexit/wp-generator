@@ -5,24 +5,10 @@
 </template>
 
 <script>
-import Layout from "./views/Layout";
+import Layout from "./views/Layout.vue";
 export default {
   mounted() {
-    this.$root.addBodyClass("page-home");
-
-    var wpgenData = localStorage.getItem("wpgen");
-
-    if (wpgenData) {
-      // wpgenData = JSON.parse(wpgenData);
-      // Object.keys(wpgenData).map((key, index) => {
-      //   this.$store.dispatch("setStateData", {
-      //     key: key,
-      //     value: wpgenData[key],
-      //   });
-      // });
-      // //set pluginname
-      // this.$store.dispatch("setPluginName", wpgenData.general.pluginName);
-    }
+    document.body.classList.add("page", "page-home", "preload");
   },
   components: {
     Layout,

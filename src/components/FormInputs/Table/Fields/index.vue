@@ -1,11 +1,7 @@
 <template>
   <div>
-    <div
-      v-for="(item, i) in tableFields"
-      :key="i"
-      class="pt-10 mb-10 field_area"
-    >
-      <fields :index="index" :field-index="i" />
+    <div v-for="(field, fieldIndex) in tables[index].fields" :key="fieldIndex">
+      <fields :index="index" :fieldIndex="fieldIndex" />
     </div>
 
     <button
@@ -13,15 +9,14 @@
       role="button"
       @click.prevent="addnew"
     >
-      Add Field
+      ADD FIELD
     </button>
   </div>
 </template>
 
 <script>
-import fields from "./fields";
+import fields from "./fields.vue";
 import { mapGetters } from "vuex";
-
 export default {
   props: {
     index: {
@@ -34,24 +29,15 @@ export default {
   },
   computed: {
     ...mapGetters(["tables"]),
-    tableFields() {
-      return this.tables[this.index].fields;
-    },
   },
   methods: {
     addnew() {
-      this.$store.dispatch("addNewTableField", { index: this.index });
+      this.$store.dispatch("addNewTableField", {
+        index: this.index,
+      });
     },
   },
 };
 </script>
 
-<style scoped>
-.field_area {
-  border-top: 1px solid #ddd;
-}
-div.field_area:first-child {
-  padding-top: 0 !important;
-  border-top: 0px solid #ddd;
-}
-</style>
+<style lang="scss" scoped></style>

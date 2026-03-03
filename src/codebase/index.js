@@ -25,79 +25,35 @@ import { eslintignoreCode } from "./eslintignore-snippet";
 import { eslintrcCode } from "./eslintrc-snippet";
 import { prettierrcCode } from "./prettierrc-snippet";
 import { readmeCode } from "./readme-snippet";
+import { postTypeSnippet } from "./post-type-snippet";
+import { taxonomySnippet } from "./taxonomy-snippet";
 
 export const CodeBase = {
-  mainPluginCode: (data) => {
-    return mainPluginCode(validateFields(data));
-  },
-  assetsCode: (data, assets) => {
-    return assetsCode(validateFields(data), assets);
-  },
-  composerCode: (data) => {
-    return composerCode(validateFields(data));
-  },
-  installerCode: (data, tables) => {
-    return installerCode(validateFields(data), tables);
-  },
-  functionsCode: (data, tables) => {
-    return wpCrudFunctions(validateFields(data), tables);
-  },
-  dynamicMenuPageHandler: (data, table) => {
-    return dynamicMenuPageHandler(validateFields(data), table);
-  },
-  adminCode: (data, tables) => {
-    return adminCode(validateFields(data), tables);
-  },
-  listTableCode: (fileClassName, data, table) => {
-    return listTableCode(fileClassName, validateFields(data), table);
-  },
-  adminViewCode: (viewType, data, table) => {
-    return viewSnippet(viewType, validateFields(data), table);
-  },
+  mainPluginCode: (data) => mainPluginCode(validateFields(data)),
+  assetsCode: (data, assets) => assetsCode(validateFields(data), assets),
+  composerCode: (data) => composerCode(validateFields(data)),
+  installerCode: (data, tables) => installerCode(validateFields(data), tables),
+  functionsCode: (data, tables) => wpCrudFunctions(validateFields(data), tables),
+  dynamicMenuPageHandler: (data, table) => dynamicMenuPageHandler(validateFields(data), table),
+  adminCode: (data, tables) => adminCode(validateFields(data), tables),
+  listTableCode: (fileClassName, data, table) => listTableCode(fileClassName, validateFields(data), table),
+  adminViewCode: (viewType, data, table) => viewSnippet(viewType, validateFields(data), table),
   restapiCode: (data, restApiData, settings, singleRestApi = false) => {
     settings = singleRestApi ? settings : validateTableSetting(settings);
-
-    return restapiSnippet(
-      validateFields(data),
-      validateRestApiSetting(restApiData),
-      settings,
-      singleRestApi
-    );
+    return restapiSnippet(validateFields(data), validateRestApiSetting(restApiData), settings, singleRestApi);
   },
-  apiCode: (data, restapis) => {
-    return apiSnippetCode(validateFields(data), restapis);
-  },
-  frontendShortcode: (data) => {
-    return shortcodeSnippet(validateFields(data));
-  },
-  frontendCode: (data) => {
-    return frontendSnippet(validateFields(data));
-  },
-  menuCode: (data, tables, mainMenu) => {
-    return menuSnippet(validateFields(data), tables, mainMenu);
-  },
-  formErrorCode: (data) => {
-    return formErrorSnippet(validateFields(data));
-  },
-  gitIgnoreCode: () => {
-    return gitIgnoreCode();
-  },
-  editorconfigCode: () => {
-    return editorconfigCode();
-  },
-  phpcsCode: () => {
-    return phpcsCode();
-  },
-  eslintignoreCode: () => {
-    return eslintignoreCode();
-  },
-  eslintrcCode: () => {
-    return eslintrcCode();
-  },
-  prettierrcCode: () => {
-    return prettierrcCode();
-  },
-  readmeCode: (data) => {
-    return readmeCode(validateFields(data));
-  },
+  apiCode: (data, restapis) => apiSnippetCode(validateFields(data), restapis),
+  frontendShortcode: (data) => shortcodeSnippet(validateFields(data)),
+  frontendCode: (data) => frontendSnippet(validateFields(data)),
+  menuCode: (data, tables, mainMenu) => menuSnippet(validateFields(data), tables, mainMenu),
+  formErrorCode: (data) => formErrorSnippet(validateFields(data)),
+  gitIgnoreCode: () => gitIgnoreCode(),
+  editorconfigCode: () => editorconfigCode(),
+  phpcsCode: () => phpcsCode(),
+  eslintignoreCode: () => eslintignoreCode(),
+  eslintrcCode: () => eslintrcCode(),
+  prettierrcCode: () => prettierrcCode(),
+  readmeCode: (data) => readmeCode(validateFields(data)),
+  postTypeRegistration: (data, postTypes) => postTypeSnippet(validateFields(data), postTypes),
+  taxonomyRegistration: (data, taxonomies) => taxonomySnippet(validateFields(data), taxonomies),
 };
