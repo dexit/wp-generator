@@ -1,6 +1,6 @@
 {
-  "name": "wp-generate",
-  "version": "0.1.0",
+  "name": "wp-generator-react",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -9,21 +9,19 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.0",
+    "copy-to-clipboard": "^3.3.3",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "monaco-editor": "^0.44.0",
-    "prismjs": "^1.30.0",
-    "vue": "^3.3.4",
-    "vue-clipboard3": "^2.0.0",
-    "vue-router": "^4.2.2",
-    "vuedraggable": "^4.1.0",
-    "vuex": "^4.1.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.11.2",
+    "vue-clipboard3": "^2.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
-    "@popperjs/core": "^2.11.8",
-    "@vitejs/plugin-vue": "^4.2.3",
-    "jquery": "^3.7.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
     "sass": "^1.63.3",
     "vite": "^4.3.9"
   }
