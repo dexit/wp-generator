@@ -1,46 +1,44 @@
 <template>
-  <div>
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="codeModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="codeModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="codeModalLabel">
-              {{ $store.getters.pluginName }}
-            </h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body text-left">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-md-3">
-                  <div class="tree_area">
-                    <v-jstree
-                      :data="$store.state.fileArchitecture"
-                      v-if="$store.state.general.pluginName !== ''"
+  <div
+    class="modal fade"
+    id="codeModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="codeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="codeModalLabel">
+            {{ $store.getters.pluginName }} - {{ $store.getters.activeFileName }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body text-left">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="tree_area">
+                  <ul class="tree-list">
+                    <tree-item
+                      v-for="(item, index) in $store.state.fileArchitecture"
+                      :key="index"
+                      :item="item"
                       @item-click="itemClick"
-                    ></v-jstree>
-                  </div>
+                    />
+                  </ul>
                 </div>
+              </div>
 
-                <div class="col-md-9">
-                  <copy-button />
-                  <code-highlight>{{ activeCode }}</code-highlight>
-                </div>
+              <div class="col-md-9">
+                <copy-button />
+                <div ref="editorContainer" class="monaco-editor-container"></div>
               </div>
             </div>
           </div>
@@ -51,29 +49,72 @@
 </template>
 
 <script>
-import "../prism";
-import VJstree from "vue-jstree";
-import CodeHighlight from "vue-code-highlight/src/CodeHighlight";
-import CopyButton from "@/components/Common/CopyButton";
+import * as monaco from 'monaco-editor';
+import TreeItem from "./TreeItem.vue";
+import CopyButton from "@/components/Common/CopyButton.vue";
 
 export default {
   components: {
-    VJstree,
-    CodeHighlight,
+    TreeItem,
     CopyButton,
   },
-  mounted() {},
+  data() {
+    return {
+      editor: null,
+    };
+  },
   computed: {
     activeCode() {
       return this.$store.getters.activeFileCodes;
     },
+    activeFileName() {
+      return this.$store.getters.activeFileName;
+    }
+  },
+  watch: {
+    activeCode(newCode) {
+      if (this.editor) {
+        this.editor.setValue(newCode);
+        const language = this.getLanguage(this.activeFileName);
+        monaco.editor.setModelLanguage(this.editor.getModel(), language);
+      }
+    },
+  },
+  mounted() {
+    this.initEditor();
+  },
+  beforeUnmount() {
+    if (this.editor) {
+      this.editor.dispose();
+    }
   },
   methods: {
-    itemClick(node) {
-      if (typeof node.model.file !== "undefined" && node.model.file) {
-        if (typeof node.model.value !== "undefined" && node.model.value) {
-          this.$store.dispatch("setActiveFileCodes", node.model.value);
-        }
+    initEditor() {
+      this.editor = monaco.editor.create(this.$refs.editorContainer, {
+        value: this.activeCode,
+        language: this.getLanguage(this.activeFileName),
+        theme: 'vs-dark',
+        automaticLayout: true,
+        readOnly: true,
+        fontSize: 14,
+      });
+    },
+    getLanguage(filename) {
+      if (!filename) return 'php';
+      const ext = filename.split('.').pop();
+      switch (ext) {
+        case 'php': return 'php';
+        case 'js': return 'javascript';
+        case 'json': return 'json';
+        case 'css': return 'css';
+        case 'md': return 'markdown';
+        default: return 'plaintext';
+      }
+    },
+    itemClick(item) {
+      if (item.file && item.value) {
+        this.$store.dispatch("setActiveFileName", item.text);
+        this.$store.dispatch("setActiveFileCodes", item.value);
       }
     },
   },
@@ -82,25 +123,17 @@ export default {
 
 <style scoped>
 @media (min-width: 992px) {
-  .modal-lg,
-  .modal-xl {
-    max-width: 1350px;
+  .modal-lg {
+    max-width: 95%;
   }
 }
-.tree {
+.tree_area {
   max-height: 70vh;
+  overflow-y: auto;
 }
-</style>
-
-<style>
-pre[class*="language-"] {
+.monaco-editor-container {
   width: 100%;
   height: 70vh;
   border-radius: 4px;
-}
-
-code[class*="language-"],
-pre[class*="language-"] {
-  font-size: 13px;
 }
 </style>

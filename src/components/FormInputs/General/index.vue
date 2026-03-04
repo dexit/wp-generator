@@ -8,44 +8,26 @@
             <input
               type="text"
               name="name"
+              class="form-control"
               autocomplete="off"
               v-model="pluginName"
             />
           </div>
         </div>
 
-        <!-- Plugin URI -->
         <text-input label="Plugin URI" objkey="pluginURI" />
-
-        <!-- Description -->
         <text-input label="Description" objkey="description" :col="12" />
-
-        <!-- Version -->
         <text-input label="Version" objkey="version" />
-
-        <!-- Author -->
         <text-input label="Author" objkey="author" />
-
-        <!-- Author URI -->
         <text-input label="Author URI" objkey="authorURI" />
-
-        <!-- Author Email -->
         <text-input label="Author Email" objkey="authorEmail" />
-
-        <!-- License -->
         <text-input label="License" objkey="license" />
-
-        <!-- license URI -->
         <text-input label="License URI" objkey="licenseURI" />
-
-        <!-- textdomain -->
         <text-input
           label="Text Domain"
           objkey="textDomain"
           convert-case="slug"
         />
-
-        <!-- Domain Path -->
         <text-input label="Domain Path" objkey="domainPath" />
       </div>
     </card>
@@ -53,8 +35,9 @@
 </template>
 
 <script>
-import textInput from "../textInput";
-import card from "../card";
+import textInput from "../textInput.vue";
+import card from "../card.vue";
+
 export default {
   name: "General",
   computed: {

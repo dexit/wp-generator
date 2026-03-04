@@ -1,11 +1,11 @@
 <template>
-  <div class="card">
+  <div class="card mb-3">
     <div
-      class="card-header"
-      data-toggle="collapse"
-      :data-target="'#' + divid"
-      aria-expanded="false"
-      :aria-controls="'#' + divid"
+      class="card-header cursor-pointer"
+      data-bs-toggle="collapse"
+      :data-bs-target="'#' + divid"
+      aria-expanded="true"
+      :aria-controls="divid"
     >
       {{ sectionName }}
     </div>
@@ -30,16 +30,13 @@ export default {
     };
   },
   mounted() {
-    this.divid = this.$root.strRandom();
+    this.divid = 'card-' + Math.random().toString(36).substr(2, 9);
   },
 };
 </script>
 
 <style scoped>
-.card {
-  margin-bottom: 20px;
-}
-.card-header {
+.cursor-pointer {
   cursor: pointer;
 }
 </style>

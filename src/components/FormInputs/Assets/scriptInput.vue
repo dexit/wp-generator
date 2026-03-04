@@ -1,50 +1,45 @@
 <template>
-  <div class="row no-gutter">
-    <div :class="`col-md-${col}`">
+  <div class="row gx-2 mb-2">
+    <div class="col-md-3">
       <div class="form-group">
-        <label for="name">Handle</label>
-        <input type="text" v-model="handle" autocomplete="off" />
+        <label>Handle</label>
+        <input type="text" v-model="handle" class="form-control form-control-sm" autocomplete="off" />
       </div>
     </div>
-    <div :class="`col-md-${col}`">
+    <div class="col-md-3">
       <div class="form-group">
-        <label for="name">File Name</label>
-        <input type="text" v-model="filename" autocomplete="off" />
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="form-group">
-        <label for="name">Dependency</label>
-        <input type="text" v-model="dependency" autocomplete="off" />
+        <label>File Name</label>
+        <input type="text" v-model="filename" class="form-control form-control-sm" autocomplete="off" />
       </div>
     </div>
 
-    <div class="col-md-2" v-if="type === 'js'">
+    <div class="col-md-3">
       <div class="form-group">
-        <label>In Footer</label>
+        <label>Dependency</label>
+        <input type="text" v-model="dependency" class="form-control form-control-sm" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+      <div class="form-check mb-1" v-if="type === 'js'">
         <input
-          :id="`in_footer-${index}`"
-          class="switch"
+          :id="'in_footer-' + index"
+          class="form-check-input"
           type="checkbox"
           v-model="in_footer"
         />
-        <label :for="`in_footer-${index}`" class="switch"></label>
+        <label :for="'in_footer-' + index" class="form-check-label small">Footer</label>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { slug, titleCase } from "../../../utils/helpers";
+import { slug } from "../../../utils/helpers";
 import { mapState } from "vuex";
 
 export default {
   props: {
-    col: {
-      type: Number,
-      default: 6,
-    },
     index: {
       type: Number,
       default: 0,
@@ -61,33 +56,32 @@ export default {
         return this.assets[this.type][this.index].handle;
       },
       set(val) {
-        if (val !== "") {
-          this.$store.dispatch("setAssetsData", {
-            type: this.type,
-            index: this.index,
-            key: "handle",
-            value: slug(val),
-          });
-        }
+        this.$store.dispatch("setAssetsData", {
+          type: this.type,
+          index: this.index,
+          key: "handle",
+          value: slug(val),
+        });
       },
     },
     filename: {
       get() {
         let key = this.type === "css" ? "style" : "script";
-        let filename = this.assets[this.type][this.index][key];
-
-        return filename;
+        return this.assets[this.type][this.index][key];
       },
       set(val) {
-        if (val !== "") {
-          this.addFile(val);
-        }
+        let key = this.type === "css" ? "style" : "script";
+        this.$store.dispatch("setAssetsData", {
+          type: this.type,
+          index: this.index,
+          key: key,
+          value: slug(val),
+        });
       },
     },
     dependency: {
       get() {
-        let key = "dependency";
-        return this.assets[this.type][this.index][key];
+        return this.assets[this.type][this.index].dependency;
       },
       set(val) {
         this.$store.dispatch("setAssetsData", {
@@ -100,8 +94,7 @@ export default {
     },
     in_footer: {
       get() {
-        let key = "in_footer";
-        return this.assets[this.type][this.index][key];
+        return this.assets[this.type][this.index].in_footer;
       },
       set(val) {
         this.$store.dispatch("setAssetsData", {
@@ -113,19 +106,12 @@ export default {
       },
     },
   },
-  methods: {
-    addFile(val) {
-      let key = this.type === "css" ? "style" : "script";
-
-      this.$store.dispatch("setAssetsData", {
-        type: this.type,
-        index: this.index,
-        key: key,
-        value: slug(val),
-      });
-    },
-  },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+label {
+  font-size: 11px;
+  font-weight: bold;
+}
+</style>

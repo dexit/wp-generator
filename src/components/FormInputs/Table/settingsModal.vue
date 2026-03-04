@@ -16,53 +16,54 @@
               Table Name: {{ tableData }}
             </h5>
 
-            <ul class="nav mb-0" id="pills-tab" role="tablist">
+            <ul class="nav nav-pills mb-0 ms-3" id="pills-tab" role="tablist">
               <li class="nav-item">
-                <a
+                <button
                   class="nav-link active"
                   :id="'pills-settings-tab-' + settingsId"
-                  data-toggle="pill"
-                  :href="'#pills-settings-' + settingsId"
+                  data-bs-toggle="pill"
+                  :data-bs-target="'#pills-settings-' + settingsId"
+                  type="button"
                   role="tab"
                   :aria-controls="'pills-settings-' + settingsId"
                   aria-selected="true"
-                  >Settings</a
+                  >Settings</button
                 >
               </li>
               <li class="nav-item">
-                <a
+                <button
                   class="nav-link"
                   :id="'pills-fields-tab-' + fieldsId"
-                  data-toggle="pill"
-                  :href="'#pills-fields-' + fieldsId"
+                  data-bs-toggle="pill"
+                  :data-bs-target="'#pills-fields-' + fieldsId"
+                  type="button"
                   role="tab"
                   :aria-controls="'pills-fields-' + fieldsId"
                   aria-selected="false"
-                  >Fields</a
+                  >Fields</button
                 >
               </li>
               <li class="nav-item">
-                <a
+                <button
                   class="nav-link"
                   :id="'pills-rest-tab-' + fieldsId"
-                  data-toggle="pill"
-                  :href="'#pills-rest-' + fieldsId"
+                  data-bs-toggle="pill"
+                  :data-bs-target="'#pills-rest-' + fieldsId"
+                  type="button"
                   role="tab"
                   :aria-controls="'pills-rest-' + fieldsId"
                   aria-selected="false"
-                  >Rest API</a
+                  >Rest API</button
                 >
               </li>
             </ul>
 
             <button
               type="button"
-              class="close"
-              data-dismiss="modal"
+              class="btn-close"
+              data-bs-dismiss="modal"
               aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
+            ></button>
           </div>
           <div class="modal-body text-left">
             <div class="">
@@ -108,9 +109,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-import TableFields from "./Fields";
-import TableSettings from "./Fields/settings";
-import RestApiContents from "@/components/RestApi/settings";
+import TableFields from "./Fields/index.vue";
+import TableSettings from "./Fields/settings.vue";
+import RestApiContents from "@/components/RestApi/settings.vue";
 export default {
   props: {
     index: {
@@ -120,8 +121,8 @@ export default {
   },
   data() {
     return {
-      settingsId: this.$root.strRandom(),
-      fieldsId: this.$root.strRandom(),
+      settingsId: Math.random().toString(36).substr(2, 9),
+      fieldsId: Math.random().toString(36).substr(2, 9),
     };
   },
   components: {
@@ -129,35 +130,26 @@ export default {
     TableSettings,
     RestApiContents,
   },
-  mounted() {},
   computed: {
     ...mapGetters(["tables"]),
     tableData() {
       return this.tables[this.index].name;
     },
   },
-  methods: {},
 };
 </script>
 
 <style scoped>
 @media (min-width: 992px) {
-  .modal-lg,
-  .modal-xl {
-    max-width: 1350px;
+  .modal-lg {
+    max-width: 90%;
   }
 }
 .modal-content {
   min-height: 70vh;
   max-height: 90vh;
-  overflow-x: scroll;
 }
 .nav-link {
-  display: block;
-  padding: 0.5rem 1rem;
   padding: 5px 15px;
-}
-.nav-link.active {
-  color: #000;
 }
 </style>

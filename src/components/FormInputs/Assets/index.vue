@@ -1,20 +1,28 @@
 <template>
-  <div>
-    <cssfiles />
+  <card sectionName="Assets (Optional)">
+    <div class="row">
+      <div class="col-md-6">
+        <cssfiles />
+      </div>
 
-    <jsfiles />
-  </div>
+      <div class="col-md-6">
+        <jsfiles />
+      </div>
+    </div>
+  </card>
 </template>
 
 <script>
-import cssfiles from "./cssfiles";
-import jsfiles from "./jsfiles";
+import card from "../card.vue";
+import cssfiles from "./cssfiles.vue";
+import jsfiles from "./jsfiles.vue";
 export default {
   components: {
+    card,
     cssfiles,
     jsfiles,
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

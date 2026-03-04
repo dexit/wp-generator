@@ -1,27 +1,19 @@
 <template>
-  <div>
-    <div class="row" v-if="showEnableCheckbox">
-      <div class="col-md-3">
-        <div class="form-group">
-          <input
-            :id="'rest_api_' + index"
-            type="checkbox"
-            :name="'rest_api_' + index"
-            v-model="enabled"
-          />
-          <label :for="'rest_api_' + index" class="checkbox">Rest API</label>
-        </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-check mb-3" v-if="showEnableCheckbox">
+        <input class="form-check-input" type="checkbox" v-model="enabled" id="restEnabled">
+        <label class="form-check-label" for="restEnabled">
+          Enable Rest API
+        </label>
       </div>
-    </div>
 
-    <div v-if="enabled">
-      <div class="row">
+      <div class="row" v-if="enabled">
         <div class="col-md-4">
           <form-text-input
-            label="Rest API Class Name"
-            placeholder="Addressbook"
+            label="Class Name"
+            placeholder="Example"
             v-model="className"
-            :textvalue="className"
           />
         </div>
         <div class="col-md-4">
@@ -29,68 +21,14 @@
             label="Namespace"
             placeholder="wpgenerator/v1"
             v-model="namespace"
-            :textvalue="namespace"
           />
         </div>
         <div class="col-md-4">
           <form-text-input
             label="Rest Base"
-            placeholder="contacts"
+            placeholder="items"
             v-model="restbase"
-            :textvalue="restbase"
           />
-        </div>
-
-        <div class="col-md-6">
-          <form-text-input
-            label="Create Permission"
-            placeholder="manage_options (left blank for publicly accessible)"
-            v-model="createPermission"
-            :textvalue="createPermission"
-          />
-        </div>
-        <div class="col-md-6">
-          <form-text-input
-            label="Read Permission"
-            placeholder="manage_options (left blank for publicly accessible)"
-            v-model="readPermission"
-            :textvalue="readPermission"
-          />
-        </div>
-        <div class="col-md-6">
-          <form-text-input
-            label="Update Permission"
-            placeholder="manage_options (left blank for publicly accessible)"
-            v-model="updatePermission"
-            :textvalue="updatePermission"
-          />
-        </div>
-        <div class="col-md-6">
-          <form-text-input
-            label="Delete Permission"
-            placeholder="manage_options (left blank for publicly accessible)"
-            v-model="deletePermission"
-            :textvalue="deletePermission"
-          />
-        </div>
-      </div>
-
-      <!-- schema fields -->
-      <div class="row mt-20">
-        <div class="col-md-12">
-          <p>Schema Fields</p>
-        </div>
-
-        <div
-          class="col-md-12"
-          v-for="(item, fieldIndex) in schemaFields"
-          :key="fieldIndex"
-        >
-          <schema-fields :index="index" :field-index="fieldIndex" />
-        </div>
-
-        <div class="col-md-12" v-if="schemaFields.length === 0">
-          <p class="text-warning">Please add some table fields first!</p>
         </div>
       </div>
     </div>
@@ -98,178 +36,43 @@
 </template>
 
 <script>
+import FormTextInput from "@/components/Common/FormTextInput.vue";
 import { mapGetters } from "vuex";
-import { slug, titleCase } from "@/utils/helpers";
-import FormTextInput from "@/components/Common/FormTextInput";
-import schemaFields from "./schemaFields";
-import { CodeBase } from "@/codebase/index";
 
 export default {
   props: {
-    index: {
-      type: Number,
-      default: 0,
-    },
-    showEnableCheckbox: {
-      type: Boolean,
-      default: true,
-    },
-    type: {
-      type: String,
-      default: "",
-    },
+    index: { type: Number, default: 0 },
+    showEnableCheckbox: { type: Boolean, default: true },
+    type: { type: String, default: "table" },
   },
-  components: {
-    FormTextInput,
-    schemaFields,
-  },
+  components: { FormTextInput },
   computed: {
-    ...mapGetters(["tables", "restapi"]),
+    ...mapGetters(["restapi"]),
     enabled: {
-      get() {
-        return this.getRestApiData("enabled");
-      },
-      set(val) {
-        this.setRestApiData("enabled", val);
-
-        if (val) {
-          this.setTableFieldsDataInRestApi();
-        } else {
-          this.$store.dispatch("setRestApiData", {
-            index: this.index,
-            reset: true,
-            value: [],
-          });
-        }
-      },
+      get() { return this.restapi[this.index]?.enabled; },
+      set(val) { this.setData("enabled", val); },
     },
     className: {
-      get() {
-        return this.getRestApiData("className");
-      },
-      set(val) {
-        val = titleCase(val, "_");
-        this.setRestApiData("className", val);
-
-        if (this.type !== "single") {
-          this.$store.dispatch("addNewFileInFileTree", {
-            id: "api_file_" + this.index,
-            type: "php",
-            file: true,
-            name: val + ".php",
-            parent_id: "includes_api",
-            replace: true,
-            value: () => {
-              return CodeBase.restapiCode(
-                this.$store.getters.general,
-                this.$store.getters.restapi[this.index],
-                this.$store.getters.tables[this.index].settings
-              );
-            },
-          });
-        }
-      },
+      get() { return this.restapi[this.index]?.className; },
+      set(val) { this.setData("className", val); },
     },
     namespace: {
-      get() {
-        return this.getRestApiData("namespace");
-      },
-      set(val) {
-        val = slug(val, "-");
-        this.setRestApiData("namespace", val);
-      },
+      get() { return this.restapi[this.index]?.namespace; },
+      set(val) { this.setData("namespace", val); },
     },
     restbase: {
-      get() {
-        return this.getRestApiData("restbase");
-      },
-      set(val) {
-        val = slug(val, "-");
-        this.setRestApiData("restbase", val);
-      },
-    },
-    createPermission: {
-      get() {
-        return this.getRestApiData("createPermission");
-      },
-      set(val) {
-        val = slug(val, "_");
-        this.setRestApiData("createPermission", val);
-      },
-    },
-    readPermission: {
-      get() {
-        return this.getRestApiData("readPermission");
-      },
-      set(val) {
-        val = slug(val, "_");
-        this.setRestApiData("readPermission", val);
-      },
-    },
-    updatePermission: {
-      get() {
-        return this.getRestApiData("updatePermission");
-      },
-      set(val) {
-        val = slug(val, "_");
-        this.setRestApiData("updatePermission", val);
-      },
-    },
-    deletePermission: {
-      get() {
-        return this.getRestApiData("deletePermission");
-      },
-      set(val) {
-        val = slug(val, "_");
-        this.setRestApiData("deletePermission", val);
-      },
-    },
-    schemaFields() {
-      return this.getRestApiData("schemaFields");
+      get() { return this.restapi[this.index]?.restbase; },
+      set(val) { this.setData("restbase", val); },
     },
   },
   methods: {
-    getRestApiData(key) {
-      return this.restapi[this.index][key];
-    },
-    setRestApiData(key, value) {
-      if (typeof value === "string") {
-        value = value.trim();
-      }
-
+    setData(key, value) {
       this.$store.dispatch("setRestApiData", {
         index: this.index,
         key: key,
         value: value,
       });
     },
-    setTableFieldsDataInRestApi() {
-      let tableFields = this.tables[this.index].fields;
-
-      tableFields
-        .filter((item) => {
-          return item.name && item.type;
-        })
-        .map((item) => {
-          let type = item.type === "INT" ? "integer" : "string";
-
-          this.$store.dispatch("addNewRestApiSchemaField", {
-            index: this.index,
-            value: {
-              propertyKey: item.name,
-              type: type,
-              context: "view, edit",
-              format: "",
-              readonly: false,
-              required: false,
-              sanitize: false,
-              description: "",
-            },
-          });
-        });
-    },
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

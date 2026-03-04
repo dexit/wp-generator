@@ -2,7 +2,6 @@
   <div>
     <card sectionName="Advanced">
       <div class="row">
-        <!-- Main Class Name -->
         <text-input
           label="Base Namespace"
           objkey="baseNamespace"
@@ -11,32 +10,30 @@
           placeholder="WPGenerator\Weather"
         />
 
-        <!-- Main Class Name -->
         <text-input
           label="Main Class Name"
           objkey="mainClassName"
           convert-case="title"
-          helptext="Plugin initial class name. ex: Weather_Forecast"
-          placeholder="Weather_Forecast"
+          helptext="Main class name of the plugin. ex: Weather"
+          placeholder="Weather"
         />
 
-        <!-- Constant Prefix -->
         <text-input
           label="Constant Prefix"
           objkey="constantPrefix"
-          convert-case="uppercase"
-          helptext="Plugin constant prefix. ex: WEATHER_ASSETS"
-          placeholder="WEATHER_ASSETS"
+          convert-case="slug"
+          separator="_"
+          helptext="Plugin constant prefix. ex: WF_WEATHER"
+          placeholder="WF_WEATHER"
         />
 
-        <!-- Constant Prefix -->
         <text-input
           label="Function Prefix"
           objkey="functionPrefix"
           convert-case="slug"
           separator="_"
-          helptext="Plugin function prefix. ex: wf_get_results"
-          placeholder="wf_get_results"
+          helptext="Plugin function prefix. ex: wf_get_weather"
+          placeholder="wf_get_weather"
         />
       </div>
     </card>
@@ -44,8 +41,8 @@
 </template>
 
 <script>
-import textInput from "../textInput";
-import card from "../card";
+import textInput from "../textInput.vue";
+import card from "../card.vue";
 export default {
   components: {
     textInput,

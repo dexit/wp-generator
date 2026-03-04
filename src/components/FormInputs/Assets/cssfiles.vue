@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <card sectionName="CSS Files">
-      <div v-for="(item, index) in assets.css" :key="index">
-        <script-input :index="index" :col="4"></script-input>
+  <div class="row">
+    <div class="col-md-12">
+      <h6 class="mb-10">Stylesheets (CSS)</h6>
+
+      <div v-for="(item, index) in assets.css" :key="index" class="mb-20">
+        <script-input :index="index" type="css" />
       </div>
 
       <button
@@ -12,30 +14,28 @@
       >
         ADD
       </button>
-    </card>
+    </div>
   </div>
 </template>
 
 <script>
-import Card from "../card";
-import TextInput from "../textInput";
-import ScriptInput from "./scriptInput";
 import { mapGetters } from "vuex";
+import scriptInput from "./scriptInput.vue";
 export default {
   components: {
-    Card,
-    TextInput,
-    ScriptInput,
+    scriptInput,
   },
   computed: {
     ...mapGetters(["assets"]),
   },
   methods: {
     addnew() {
-      this.$store.dispatch("addNewAssets", { type: "css" });
+      this.$store.dispatch("addNewAssets", {
+        type: "css",
+      });
     },
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

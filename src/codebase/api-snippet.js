@@ -1,61 +1,43 @@
-const register_api = (restapis) => {
-  let codeData = ``;
-  restapis
-    .filter((item) => {
-      return (
-        item.enabled &&
-        typeof item.className !== "undefined" &&
-        item.className !== ""
-      );
-    })
-    .map((item) => {
-      let className = item.className.toLowerCase();
-      codeData += `        $${className} = new API\\${item.className}();
-        $${className}->register_routes();\n\n`;
+export const apiSnippetCode = (data, restapis) => {
+    let routes = ``;
+    restapis.forEach((api) => {
+        if (api.enabled && api.className) {
+            routes += `        $this->container['${api.className.toLowerCase()}'] = new ${api.className}();\n`;
+        }
     });
 
-  return codeData.trim();
-};
-
-export const apiSnippetCode = (data, restapis) => {
-  let register_api_data = register_api(restapis);
-
-  let code = `<?php
-/**
- * API Class
- * 
- * @package ${data.baseNamespace}\\API
- */
-
-namespace ${data.baseNamespace};
-
+    let code = `<?php
 /**
  * API Class
  */
-class API {
+
+declare(strict_types=1);
+
+namespace ${data.baseNamespace}\\API;
+
+/**
+ * Class Api
+ */
+class Api {
+    /**
+     * Holds various class instances.
+     */
+    private array $container = [];
 
     /**
-     * Initialize the class.
-     * 
-     * @since ${data.version}
-     * 
-     * @return void
+     * Api constructor.
      */
     public function __construct() {
-        add_action( 'rest_api_init', [ $this, 'register_api' ] );
+        add_action( 'rest_api_init', [ $this, 'register_routes' ] );
     }
 
     /**
-     * Register the API.
-     * 
-     * @since ${data.version}
-     *
-     * @return void
+     * Register the routes
      */
-    public function register_api() {
-        ${register_api_data}
+    public function register_routes(): void {
+${routes}
     }
-}`;
-
-  return code;
+}
+`;
+    return code;
 };

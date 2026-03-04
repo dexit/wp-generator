@@ -1,10 +1,15 @@
 <template>
   <div class="generated_files_area">
-    <v-jstree
-      :data="$store.state.fileArchitecture"
-      @item-click="itemClick"
-      v-if="$store.state.general.pluginName !== ''"
-    ></v-jstree>
+    <div v-if="$store.state.general.pluginName !== ''" class="tree-container">
+      <ul class="tree-list">
+        <tree-item
+          v-for="(item, index) in $store.state.fileArchitecture"
+          :key="index"
+          :item="item"
+          @item-click="itemClick"
+        />
+      </ul>
+    </div>
 
     <p v-else><i>No Preview Available</i></p>
 
@@ -13,30 +18,31 @@
 </template>
 
 <script>
-import VJstree from "vue-jstree";
-import CodeModal from "./codemodal";
-import $ from "jquery";
+import CodeModal from "./codemodal.vue";
+import TreeItem from "./TreeItem.vue";
+import { Modal } from 'bootstrap';
 
 export default {
-  data() {
-    return {};
+  components: {
+    CodeModal,
+    TreeItem
   },
   mounted() {
     this.$store.dispatch("setFileArchitecture", true);
   },
-  components: {
-    VJstree,
-    CodeModal,
-  },
   methods: {
-    itemClick(node) {
-      this.$store.dispatch("setFileArchitecture", true).then((response) => {
-        if (typeof node.model.file !== "undefined" && node.model.file) {
-          if (typeof node.model.value !== "undefined" && node.model.value) {
-            this.$store.dispatch("setActiveFileName", node.model.text);
-            this.$store.dispatch("setActiveFileCodes", node.model.value);
+    itemClick(item) {
+      this.$store.dispatch("setFileArchitecture", true).then(() => {
+        if (item.file) {
+          if (item.value) {
+            this.$store.dispatch("setActiveFileName", item.text);
+            this.$store.dispatch("setActiveFileCodes", item.value);
           }
-          $("#codeModal").modal("show");
+          const modalElement = document.getElementById('codeModal');
+          if (modalElement) {
+            const modal = Modal.getOrCreateInstance(modalElement);
+            modal.show();
+          }
         }
       });
     },
@@ -44,25 +50,19 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .generated_files_area {
   padding: 30px 20px;
   background: #f1f1f1;
   border-radius: 3px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
-.tree {
+.tree-container {
   text-align: left;
-  overflow: scroll;
 }
-.tree-anchor {
-  font-size: 13px !important;
-}
-.tree-anchor:hover {
-  background: #ff0000 !important;
-}
-.tree-default .tree-selected {
-  background: #e1e1e1;
-  border: 0;
-  box-shadow: none;
+.tree-list {
+  list-style: none;
+  padding-left: 0;
 }
 </style>

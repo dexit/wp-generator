@@ -1,40 +1,21 @@
 <template>
-  <div>
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="codeModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="codeModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="codeModalLabel">
-              REST API
-            </h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body text-left">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-md-12">
-                  <copy-button />
-
-                  <code-highlight>{{ activeCode }}</code-highlight>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div
+    class="modal fade"
+    id="restPreviewModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="restPreviewModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="restPreviewModalLabel">REST API Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-left">
+          <copy-button />
+          <div ref="restEditorContainer" style="width: 100%; height: 70vh;"></div>
         </div>
       </div>
     </div>
@@ -42,46 +23,31 @@
 </template>
 
 <script>
-import "../prism";
-import CodeHighlight from "vue-code-highlight/src/CodeHighlight";
-import CopyButton from "@/components/Common/CopyButton";
+import * as monaco from 'monaco-editor';
+import CopyButton from "@/components/Common/CopyButton.vue";
 
 export default {
-  components: {
-    CodeHighlight,
-    CopyButton,
-  },
-  mounted() {},
+  components: { CopyButton },
+  data() { return { editor: null }; },
   computed: {
-    activeCode() {
-      return this.$store.getters.activeFileCodes;
-    },
+    activeCode() { return this.$store.getters.activeFileCodes; }
   },
-  methods: {},
+  watch: {
+    activeCode(newCode) {
+      if (this.editor) this.editor.setValue(newCode);
+    }
+  },
+  mounted() {
+    this.editor = monaco.editor.create(this.$refs.restEditorContainer, {
+      value: this.activeCode,
+      language: 'php',
+      theme: 'vs-dark',
+      automaticLayout: true,
+      readOnly: true
+    });
+  },
+  beforeUnmount() {
+    if (this.editor) this.editor.dispose();
+  }
 };
 </script>
-
-<style scoped>
-@media (min-width: 992px) {
-  .modal-lg,
-  .modal-xl {
-    max-width: 1350px;
-  }
-}
-.tree {
-  max-height: 70vh;
-}
-</style>
-
-<style>
-pre[class*="language-"] {
-  width: 100%;
-  height: 70vh;
-  border-radius: 4px;
-}
-
-code[class*="language-"],
-pre[class*="language-"] {
-  font-size: 13px;
-}
-</style>
