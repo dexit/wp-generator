@@ -18,6 +18,25 @@ export const cptCode = (data, postTypes) => {
     return code;
 };
 
+export const taxonomyCode = (data, taxonomies) => {
+    let code = ``;
+    taxonomies.forEach(tax => {
+        if (!tax.name) return;
+        code += `
+        register_taxonomy( '${tax.name}', [ 'post' ], [
+            'labels'            => [
+                'name'          => __( '${tax.plural || tax.name}', '${data.textDomain}' ),
+                'singular_name' => __( '${tax.singular || tax.name}', '${data.textDomain}' ),
+            ],
+            'hierarchical'      => ${tax.hierarchical === true},
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'show_in_rest'      => ${tax.show_in_rest !== false},
+        ] );\n`;
+    });
+    return code;
+};
+
 export const screenCode = (data, screens) => {
     let code = ``;
     screens.forEach(s => {
@@ -38,7 +57,6 @@ export const screenCode = (data, screens) => {
 
             add_action( "load-$hook", function() {
                 add_screen_option( 'layout_columns', [ 'default' => 2, 'max' => 4 ] );
-                // Help Tabs
                 $screen = get_current_screen();
                 $screen->add_help_tab( [
                     'id'      => '${slug}_help',
@@ -46,6 +64,43 @@ export const screenCode = (data, screens) => {
                     'content' => '<p>' . __( 'Custom help content for ${s.title}', '${data.textDomain}' ) . '</p>',
                 ] );
             } );
+        } );\n`;
+    });
+    return code;
+};
+
+export const shortcodeCode = (data, shortcodes) => {
+    let code = ``;
+    shortcodes.forEach(s => {
+        if (!s.tag) return;
+        code += `
+        add_shortcode( '${s.tag}', function( $atts, $content = null ) {
+            $atts = shortcode_atts( [
+                'title' => 'Default Title',
+            ], $atts, '${s.tag}' );
+
+            return '<div class="${s.tag}-wrapper">' . esc_html( $atts['title'] ) . '</div>';
+        } );\n`;
+    });
+    return code;
+};
+
+export const metaBoxCode = (data, metaBoxes) => {
+    let code = ``;
+    metaBoxes.forEach(mb => {
+        if (!mb.title) return;
+        code += `
+        add_action( 'add_meta_boxes', function() {
+            add_meta_box(
+                '${mb.id || 'custom_meta_box'}',
+                __( '${mb.title}', '${data.textDomain}' ),
+                function( $post ) {
+                    $value = get_post_meta( $post->ID, '_${mb.id || 'custom_meta_box'}_key', true );
+                    echo '<label for="custom_field">' . __( 'Description for this field', '${data.textDomain}' ) . '</label>';
+                    echo '<input type="text" id="custom_field" name="custom_field" value="' . esc_attr( $value ) . '" size="25" />';
+                },
+                '${mb.screen || 'post'}'
+            );
         } );\n`;
     });
     return code;
@@ -81,21 +136,16 @@ export const restCallbackCode = (data, callbacks) => {
     });
     return code;
 };
-export const taxonomyCode = (data, taxonomies) => {
+export const userRoleCode = (data, roles) => {
     let code = ``;
-    taxonomies.forEach(tax => {
-        if (!tax.name) return;
+    roles.forEach(r => {
+        if (!r.role) return;
+        const caps = r.caps.split(',').reduce((acc, cap) => {
+            acc[cap.trim()] = true;
+            return acc;
+        }, {});
         code += `
-        register_taxonomy( '${tax.name}', [ 'post' ], [
-            'labels'            => [
-                'name'          => __( '${tax.plural || tax.name}', '${data.textDomain}' ),
-                'singular_name' => __( '${tax.singular || tax.name}', '${data.textDomain}' ),
-            ],
-            'hierarchical'      => ${tax.hierarchical === true},
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'show_in_rest'      => ${tax.show_in_rest !== false},
-        ] );\n`;
+        add_role( '${r.role}', __( '${r.name || r.role}', '${data.textDomain}' ), ${JSON.stringify(caps).replace(/"/g, "'")} );\n`;
     });
     return code;
 };

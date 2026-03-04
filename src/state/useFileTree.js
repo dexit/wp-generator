@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { CodeBase } from '../codebase/index';
 import { blockSnippet } from '../codebase/block-snippet';
-import { cptCode, taxonomyCode, screenCode, settingsCode, restCallbackCode } from '../codebase/enhanced-snippets';
+import { cptCode, taxonomyCode, screenCode, settingsCode, restCallbackCode, shortcodeCode, metaBoxCode, userRoleCode } from '../codebase/enhanced-snippets';
 import { slug } from '../utils/helpers';
 
 export const useFileTree = (state) => {
     return useMemo(() => {
-        const { general, postTypes, taxonomies, adminScreens, settings, restCallbacks, hasBlocks, blockName, blockTitle } = state;
+        const { general, postTypes, taxonomies, adminScreens, settings, restCallbacks, shortcodes, metaBoxes, userRoles, hasBlocks, blockName, blockTitle } = state;
         const pluginSlug = slug(general.pluginName) || 'plugin-name';
 
         const tree = [
@@ -21,10 +21,6 @@ export const useFileTree = (state) => {
                 value: () => CodeBase.composerCode(general)
             },
             {
-                id: 'root_readme', type: 'markdown', file: true, name: 'README.md', parent_id: 'root',
-                value: () => CodeBase.readmeCode(general)
-            },
-            {
                 id: 'inc_registers', type: 'php', file: true, name: 'Registers.php', parent_id: 'root_includes',
                 value: () => {
                     const cpts = cptCode(general, postTypes);
@@ -32,8 +28,11 @@ export const useFileTree = (state) => {
                     const screens = screenCode(general, adminScreens);
                     const sets = settingsCode(general, settings);
                     const rests = restCallbackCode(general, restCallbacks);
+                    const shorts = shortcodeCode(general, shortcodes);
+                    const metas = metaBoxCode(general, metaBoxes);
+                    const roles = userRoleCode(general, userRoles);
 
-                    return `<?php\n\ndeclare(strict_types=1);\n\nnamespace ${general.baseNamespace || 'WPPlugin'};\n\nclass Registers {\n    public function __construct() {\n        add_action( 'init', [ $this, 'register_cpts' ] );\n        add_action( 'init', [ $this, 'register_taxonomies' ] );\n        add_action( 'rest_api_init', [ $this, 'register_rest' ] );\n${screens ? '        add_action( \'admin_menu\', [ $this, \'register_screens\' ] );\n' : ''}${sets ? '        add_action( \'admin_init\', [ $this, \'register_settings\' ] );\n' : ''}\n    }\n\n    public function register_cpts(): void {\n${cpts || '        // No CPTs registered'}\n    }\n\n    public function register_taxonomies(): void {\n${taxes || '        // No Taxonomies registered'}\n    }\n\n    public function register_rest(): void {\n${rests || '        // No REST routes registered'}\n    }\n\n    public function register_screens(): void {\n${screens || '        // No Admin Screens registered'}\n    }\n\n    public function register_settings(): void {\n${sets || '        // No Settings registered'}\n    }\n}`;
+                    return `<?php\n\ndeclare(strict_types=1);\n\nnamespace ${general.baseNamespace || 'WPPlugin'};\n\n/**\n * Registers Class\n * Handles all WordPress registrations using PHP 8.2 standards.\n */\nclass Registers {\n    public function __construct() {\n        add_action( 'init', [ $this, 'register_cpts' ] );\n        add_action( 'init', [ $this, 'register_taxonomies' ] );\n        add_action( 'init', [ $this, 'register_shortcodes' ] );\n        add_action( 'init', [ $this, 'register_roles' ] );\n        add_action( 'rest_api_init', [ $this, 'register_rest' ] );\n${screens ? '        add_action( \'admin_menu\', [ $this, \'register_screens\' ] );\n' : ''}${sets ? '        add_action( \'admin_init\', [ $this, \'register_settings\' ] );\n' : ''}${metas ? '        add_action( \'add_meta_boxes\', [ $this, \'register_meta_boxes\' ] );\n' : ''}${hasBlocks ? '        add_action( \'init\', [ $this, \'register_blocks\' ] );\n' : ''}\n    }\n\n    public function register_cpts(): void {\n${cpts || '        // No CPTs'}\n    }\n\n    public function register_taxonomies(): void {\n${taxes || '        // No Taxonomies'}\n    }\n\n    public function register_shortcodes(): void {\n${shorts || '        // No Shortcodes'}\n    }\n\n    public function register_roles(): void {\n${roles || '        // No Custom Roles'}\n    }\n\n    public function register_rest(): void {\n${rests || '        // No REST routes'}\n    }\n\n    public function register_screens(): void {\n${screens || '        // No Admin Screens'}\n    }\n\n    public function register_settings(): void {\n${sets || '        // No Settings'}\n    }\n\n    public function register_meta_boxes(): void {\n${metas || '        // No Meta Boxes'}\n    }\n\n    public function register_blocks(): void {\n        register_block_type( dirname( __FILE__, 2 ) . '/build/${blockName}' );\n    }\n}`;
                 }
             }
         ];
