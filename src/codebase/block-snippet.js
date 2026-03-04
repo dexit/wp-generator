@@ -1,5 +1,4 @@
 export const blockSnippet = (data, blocks) => {
-    // Generate code for a single block
     const block = blocks[0] || { name: 'example-block', title: 'Example Block' };
     const blockName = `${data.textDomain}/${block.name}`;
 
@@ -7,11 +6,11 @@ export const blockSnippet = (data, blocks) => {
         "$schema": "https://schemas.wp.org/trunk/block.json",
         "apiVersion": 3,
         "name": blockName,
-        "version": "0.1.0",
+        "version": "1.0.0",
         "title": block.title,
         "category": "widgets",
         "icon": "smiley",
-        "description": "A custom block.",
+        "description": "Custom Gutenberg block.",
         "supports": { "html": false },
         "textdomain": data.textDomain,
         "editorScript": "file:./index.js",
@@ -19,43 +18,9 @@ export const blockSnippet = (data, blocks) => {
         "style": "file:./style-index.css"
     };
 
-    const editJs = `
-import { useBlockProps } from '@wordpress/block-editor';
-import './editor.scss';
-
-export default function Edit() {
-    return (
-        <p { ...useBlockProps() }>
-            Hello from the editor!
-        </p>
-    );
-}
-`;
-
-    const saveJs = `
-import { useBlockProps } from '@wordpress/block-editor';
-
-export default function save() {
-    return (
-        <p { ...useBlockProps.save() }>
-            Hello from the frontend!
-        </p>
-    );
-}
-`;
-
-    const indexJs = `
-import { registerBlockType } from '@wordpress/blocks';
-import './style.scss';
-import Edit from './edit';
-import save from './save';
-import metadata from './block.json';
-
-registerBlockType( metadata.name, {
-    edit: Edit,
-    save,
-} );
-`;
+    const editJs = `import { useBlockProps } from '@wordpress/block-editor';\n\nexport default function Edit() {\n    return (\n        <p { ...useBlockProps() }>\n            Hello from the editor!\n        </p>\n    );\n}\n`;
+    const saveJs = `import { useBlockProps } from '@wordpress/block-editor';\n\nexport default function save() {\n    return (\n        <p { ...useBlockProps.save() }>\n            Hello from the frontend!\n        </p>\n    );\n}\n`;
+    const indexJs = `import { registerBlockType } from '@wordpress/blocks';\nimport Edit from './edit';\nimport save from './save';\nimport metadata from './block.json';\n\nregisterBlockType( metadata.name, {\n    edit: Edit,\n    save,\n} );\n`;
 
     return {
         blockJson: JSON.stringify(blockJson, null, 4),

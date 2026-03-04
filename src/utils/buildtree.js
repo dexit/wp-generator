@@ -1,82 +1,30 @@
-/**
- * build tree data for vue js tree
- *
- * @param {*} items
- * @param {*} id
- * @param {*} link
- *
- * @return object
- */
-export const buildTreeData = (items, id = null, link = "parent_id") =>
+export const buildTreeHierarchy = (items, id = null) =>
   items
-    .filter((item) => item[link] === id)
+    .filter((item) => item.parent_id === id)
     .map((item) => {
-      let data = {
+      const data = {
         text: item.name,
         type: item.type,
+        file: item.file,
+        value: typeof item.value === 'function' ? item.value() : item.value
       };
 
-      if (typeof item.directory !== "undefined" && item.directory) {
-        data.opened = item.directory;
-        data.children = buildTreeData(items, item.id);
-      }
-
-      if (typeof item.file !== "undefined" && item.file) {
-        var fileExt = item.name.split(".").pop();
-
-        switch (fileExt) {
-          case "php":
-            data.icon = "fab fa-php";
-            break;
-          case "css":
-            data.icon = "fab fa-css3";
-            break;
-          case "js":
-            data.icon = "fab fa-js-square";
-            break;
-          default:
-            data.icon = "far fa-file";
-            break;
-        }
-
-        data.file = item.file;
-
-        if (typeof item.value !== "undefined") {
-          data.value = item.value();
-        }
+      if (item.directory) {
+        data.children = buildTreeHierarchy(items, item.id);
       }
 
       return data;
     });
 
-/**
- * build tree data for zip
- *
- * @param {*} items
- * @param {*} id
- * @param {*} link
- *
- * @return object
- */
-export const buildZipTree = (items, zip, id = null, link = "parent_id") =>
+export const buildZipTree = (items, zip, id = null) =>
   items
-    .filter((item) => item[link] === id)
-    .map((item) => {
-      var dataZip;
-
-      if (typeof item.directory !== "undefined" && item.directory) {
-        dataZip = zip.folder(item.name);
-        buildZipTree(items, dataZip, item.id);
+    .filter((item) => item.parent_id === id)
+    .forEach((item) => {
+      if (item.directory) {
+        const folder = zip.folder(item.name);
+        buildZipTree(items, folder, item.id);
+      } else if (item.file) {
+        const code = typeof item.value === 'function' ? item.value() : item.value;
+        zip.file(item.name, code || '');
       }
-
-      if (typeof item.file !== "undefined" && item.file) {
-        let code = "";
-        if (typeof item.value !== "undefined") {
-          code = item.value();
-        }
-
-        dataZip = zip.file(item.name, code);
-      }
-
-      return dataZip;
     });

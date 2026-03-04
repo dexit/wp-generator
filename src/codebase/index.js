@@ -1,8 +1,3 @@
-import {
-  validateFields,
-  validateTableSetting,
-  validateRestApiSetting,
-} from "./fields";
 import { mainPluginCode } from "./main-plugin";
 import { assetsCode } from "./assets";
 import { composerCode } from "./composer";
@@ -25,35 +20,30 @@ import { eslintignoreCode } from "./eslintignore-snippet";
 import { eslintrcCode } from "./eslintrc-snippet";
 import { prettierrcCode } from "./prettierrc-snippet";
 import { readmeCode } from "./readme-snippet";
-import { postTypeSnippet } from "./post-type-snippet";
-import { taxonomySnippet } from "./taxonomy-snippet";
+import { cptCode, taxonomyCode } from './enhanced-snippets';
 
 export const CodeBase = {
-  mainPluginCode: (data) => mainPluginCode(validateFields(data)),
-  assetsCode: (data, assets) => assetsCode(validateFields(data), assets),
-  composerCode: (data) => composerCode(validateFields(data)),
-  installerCode: (data, tables) => installerCode(validateFields(data), tables),
-  functionsCode: (data, tables) => wpCrudFunctions(validateFields(data), tables),
-  dynamicMenuPageHandler: (data, table) => dynamicMenuPageHandler(validateFields(data), table),
-  adminCode: (data, tables) => adminCode(validateFields(data), tables),
-  listTableCode: (fileClassName, data, table) => listTableCode(fileClassName, validateFields(data), table),
-  adminViewCode: (viewType, data, table) => viewSnippet(viewType, validateFields(data), table),
-  restapiCode: (data, restApiData, settings, singleRestApi = false) => {
-    settings = singleRestApi ? settings : validateTableSetting(settings);
-    return restapiSnippet(validateFields(data), validateRestApiSetting(restApiData), settings, singleRestApi);
-  },
-  apiCode: (data, restapis) => apiSnippetCode(validateFields(data), restapis),
-  frontendShortcode: (data) => shortcodeSnippet(validateFields(data)),
-  frontendCode: (data) => frontendSnippet(validateFields(data)),
-  menuCode: (data, tables, mainMenu) => menuSnippet(validateFields(data), tables, mainMenu),
-  formErrorCode: (data) => formErrorSnippet(validateFields(data)),
+  mainPluginCode: (data) => mainPluginCode(data),
+  assetsCode: (data, assets) => assetsCode(data, assets),
+  composerCode: (data) => composerCode(data),
+  installerCode: (data, tables) => installerCode(data, tables),
+  functionsCode: (data, tables) => wpCrudFunctions(data, tables),
+  dynamicMenuPageHandler: (data, table) => dynamicMenuPageHandler(data, table),
+  adminCode: (data, tables) => adminCode(data, tables),
+  listTableCode: (fileClassName, data, table) => listTableCode(fileClassName, data, table),
+  adminViewCode: (viewType, data, table) => viewSnippet(viewType, data, table),
+  apiCode: (data, restapis) => apiSnippetCode(data, restapis),
+  frontendShortcode: (data) => shortcodeSnippet(data),
+  frontendCode: (data) => frontendSnippet(data),
+  menuCode: (data, tables, mainMenu) => menuSnippet(data, tables, mainMenu),
+  formErrorCode: (data) => formErrorSnippet(data),
   gitIgnoreCode: () => gitIgnoreCode(),
   editorconfigCode: () => editorconfigCode(),
   phpcsCode: () => phpcsCode(),
   eslintignoreCode: () => eslintignoreCode(),
   eslintrcCode: () => eslintrcCode(),
   prettierrcCode: () => prettierrcCode(),
-  readmeCode: (data) => readmeCode(validateFields(data)),
-  postTypeRegistration: (data, postTypes) => postTypeSnippet(validateFields(data), postTypes),
-  taxonomyRegistration: (data, taxonomies) => taxonomySnippet(validateFields(data), taxonomies),
+  readmeCode: (data) => readmeCode(data),
+  postTypeRegistration: (data, postTypes) => cptCode(data, postTypes),
+  taxonomyRegistration: (data, taxonomies) => taxonomyCode(data, taxonomies),
 };

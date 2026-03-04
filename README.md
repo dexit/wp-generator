@@ -1,29 +1,16 @@
-# WP Generator
+# Modern WP Generator (React Edition)
 
-## Demo Link
+A high-performance WordPress plugin generator built with React 18, Vite, and Monaco Editor.
 
-[Website](http://wp-generator.com/)
-
-## Project setup
-
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-
-```
-npm run build
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
-# wp-generator
+## Features
+- **Modern PHP 8.2+ Support**: Generates code with strict types, typed properties, and match expressions.
+- **WP 6.9+ Compatibility**: Follows the latest WordPress coding standards and block API.
+- **Enhanced Registers**:
+  - Custom Post Types (CPT) with REST API support.
+  - Custom Taxonomies (Hierarchical & Non-hierarchical).
+  - Admin Edit Screens with Screen Options and Help Tabs.
+  - Settings & Options API integration.
+  - Custom WP REST API endpoints with permission callbacks.
+- **React Blocks**: Generates Gutenberg blocks pre-configured for `@wordpress/scripts`.
+- **Monaco Editor**: High-performance code preview with syntax highlighting.
+- **Deployment Ready**: Optimized for Vercel and Cloudflare Pages.

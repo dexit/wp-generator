@@ -1,0 +1,38 @@
+@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.fw-mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.btn-primary {
+    background-color: #007cba; /* WordPress Blue */
+    border-color: #007cba;
+}
+
+.btn-primary:hover {
+    background-color: #006799;
+    border-color: #006799;
+}
+.hover-bg-light:hover {
+    background-color: #f1f3f5;
+}
+.hover-bg-light {
+    padding-left: 8px !important;
+}
