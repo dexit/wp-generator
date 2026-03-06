@@ -13,21 +13,15 @@ export const GeneratorProvider = ({ children }) => {
         mainClassName: '', constantPrefix: '', functionPrefix: '',
     });
 
-    // Custom Post Types
+    // Registers
     const [postTypes, setPostTypes] = useState([]);
-
-    // Taxonomies
     const [taxonomies, setTaxonomies] = useState([]);
-
-    // Admin Screens (Edit Screens / Screen Options)
     const [adminScreens, setAdminScreens] = useState([]);
-
-    // Options & Settings
     const [settings, setSettings] = useState([]);
-    const [options, setOptions] = useState([]);
-
-    // REST API Callbacks
     const [restCallbacks, setRestCallbacks] = useState([]);
+    const [shortcodes, setShortcodes] = useState([]);
+    const [metaBoxes, setMetaBoxes] = useState([]);
+    const [userRoles, setUserRoles] = useState([]);
 
     // Gutenberg Blocks
     const [hasBlocks, setHasBlocks] = useState(false);
@@ -41,7 +35,6 @@ export const GeneratorProvider = ({ children }) => {
     const updateGeneral = (key, val) => {
         setGeneral(prev => {
             const next = { ...prev, [key]: val };
-            // Auto-fill logic
             if (key === 'pluginName') {
                 const s = slug(val);
                 next.textDomain = s;
@@ -60,8 +53,10 @@ export const GeneratorProvider = ({ children }) => {
         taxonomies, setTaxonomies,
         adminScreens, setAdminScreens,
         settings, setSettings,
-        options, setOptions,
         restCallbacks, setRestCallbacks,
+        shortcodes, setShortcodes,
+        metaBoxes, setMetaBoxes,
+        userRoles, setUserRoles,
         hasBlocks, setHasBlocks,
         blockName, setBlockName,
         blockTitle, setBlockTitle,

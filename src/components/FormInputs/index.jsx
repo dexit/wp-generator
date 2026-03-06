@@ -1,9 +1,11 @@
 import React from 'react';
 import General from './General/index.jsx';
 import Advanced from './Advanced/index.jsx';
-import MainMenu from './MainMenu/index.jsx';
+import Shortcodes from './Shortcodes/index.jsx';
+import MetaBoxes from './MetaBoxes/index.jsx';
 import PostType from './PostType/index.jsx';
 import Taxonomy from './Taxonomy/index.jsx';
+import UserRoles from './UserRoles/index.jsx';
 import Blocks from './Blocks/index.jsx';
 import AdminScreens from './AdminScreens/index.jsx';
 import SettingsRegister from './Settings/index.jsx';
@@ -15,9 +17,11 @@ const FormInputs = () => {
         <div className="form-inputs">
             <General />
             <Advanced />
-            <MainMenu />
+            <Shortcodes />
+            <MetaBoxes />
             <PostType />
             <Taxonomy />
+            <UserRoles />
             <Blocks />
             <AdminScreens />
             <SettingsRegister />
