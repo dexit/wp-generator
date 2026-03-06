@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { slug, titleCase } from '../utils/helpers';
 
 const GeneratorContext = createContext();
@@ -6,14 +6,12 @@ const GeneratorContext = createContext();
 export const useGenerator = () => useContext(GeneratorContext);
 
 export const GeneratorProvider = ({ children }) => {
-    // Basic Info
     const [general, setGeneral] = useState({
         pluginName: '', baseNamespace: '', pluginURI: '', description: '', version: '1.0.0', author: '',
         authorURI: '', authorEmail: '', license: 'GPLv2', licenseURI: '', textDomain: '', domainPath: '/languages',
         mainClassName: '', constantPrefix: '', functionPrefix: '',
     });
 
-    // Registers
     const [postTypes, setPostTypes] = useState([]);
     const [taxonomies, setTaxonomies] = useState([]);
     const [adminScreens, setAdminScreens] = useState([]);
@@ -22,13 +20,12 @@ export const GeneratorProvider = ({ children }) => {
     const [shortcodes, setShortcodes] = useState([]);
     const [metaBoxes, setMetaBoxes] = useState([]);
     const [userRoles, setUserRoles] = useState([]);
+    const [assets, setAssets] = useState({ css: [], js: [] });
 
-    // Gutenberg Blocks
     const [hasBlocks, setHasBlocks] = useState(false);
     const [blockName, setBlockName] = useState('example-block');
     const [blockTitle, setBlockTitle] = useState('Example Block');
 
-    // UI State
     const [activeFileName, setActiveFileName] = useState('');
     const [activeFileCodes, setActiveFileCodes] = useState('');
 
@@ -57,6 +54,7 @@ export const GeneratorProvider = ({ children }) => {
         shortcodes, setShortcodes,
         metaBoxes, setMetaBoxes,
         userRoles, setUserRoles,
+        assets, setAssets,
         hasBlocks, setHasBlocks,
         blockName, setBlockName,
         blockTitle, setBlockTitle,
