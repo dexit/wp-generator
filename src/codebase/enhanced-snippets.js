@@ -2,6 +2,7 @@ export const cptCode = (data, postTypes) => {
     let code = ``;
     postTypes.forEach(pt => {
         if (!pt.name) return;
+        const supports = pt.supports && pt.supports.length > 0 ? pt.supports : ['title', 'editor', 'thumbnail'];
         code += `
         register_post_type( '${pt.name}', [
             'labels'      => [
@@ -11,7 +12,7 @@ export const cptCode = (data, postTypes) => {
             'public'      => ${pt.public !== false},
             'has_archive' => ${pt.has_archive !== false},
             'show_in_rest' => ${pt.show_in_rest !== false},
-            'supports'    => [ 'title', 'editor', 'thumbnail' ],
+            'supports'    => ${JSON.stringify(supports).replace(/"/g, "'")},
             'menu_icon'   => '${pt.icon || 'dashicons-admin-post'}',
         ] );\n`;
     });
@@ -121,20 +122,6 @@ export const settingsCode = (data, settings) => {
     return code;
 };
 
-export const userRoleCode = (data, roles) => {
-    let code = ``;
-    roles.forEach(r => {
-        if (!r.role) return;
-        const caps = r.caps.split(',').reduce((acc, cap) => {
-            acc[cap.trim()] = true;
-            return acc;
-        }, {});
-        code += `
-        add_role( '${r.role}', __( '${r.name || r.role}', '${data.textDomain}' ), ${JSON.stringify(caps).replace(/"/g, "'")} );\n`;
-    });
-    return code;
-};
-
 export const restCallbackCode = (data, callbacks) => {
     let code = ``;
     callbacks.forEach(cb => {
@@ -150,5 +137,46 @@ export const restCallbackCode = (data, callbacks) => {
             },
         ] );\n`;
     });
+    return code;
+};
+
+export const userRoleCode = (data, roles) => {
+    let code = ``;
+    roles.forEach(r => {
+        if (!r.role) return;
+        const caps = r.caps ? r.caps.split(',').reduce((acc, cap) => {
+            acc[cap.trim()] = true;
+            return acc;
+        }, {}) : { 'read': true };
+        code += `
+        add_role( '${r.role}', __( '${r.name || r.role}', '${data.textDomain}' ), ${JSON.stringify(caps).replace(/"/g, "'")} );\n`;
+    });
+    return code;
+};
+
+export const assetRegistrationCode = (data, assets) => {
+    let code = ``;
+    if (assets.css && assets.css.length > 0) {
+        code += `
+        add_action( 'wp_enqueue_scripts', function() {`;
+        assets.css.forEach(a => {
+            if (!a.handle) return;
+            code += `
+            wp_enqueue_style( '${a.handle}', plugins_url( 'assets/css/${a.file}', __FILE__ ), [], '${data.version}' );`;
+        });
+        code += `
+        } );\n`;
+    }
+    if (assets.js && assets.js.length > 0) {
+        code += `
+        add_action( 'wp_enqueue_scripts', function() {`;
+        assets.js.forEach(a => {
+            if (!a.handle) return;
+            code += `
+            wp_enqueue_script( '${a.handle}', plugins_url( 'assets/js/${a.file}', __FILE__ ), [], '${data.version}', ${a.footer !== false} );`;
+        });
+        code += `
+        } );\n`;
+    }
     return code;
 };
