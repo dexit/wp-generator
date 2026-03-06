@@ -95,9 +95,10 @@ export const metaBoxCode = (data, metaBoxes) => {
                 '${mb.id || 'custom_meta_box'}',
                 __( '${mb.title}', '${data.textDomain}' ),
                 function( $post ) {
-                    $value = get_post_meta( $post->ID, '_${mb.id || 'custom_meta_box'}_key', true );
-                    echo '<label for="custom_field">' . __( 'Description for this field', '${data.textDomain}' ) . '</label>';
-                    echo '<input type="text" id="custom_field" name="custom_field" value="' . esc_attr( $value ) . '" size="25" />';
+                    wp_nonce_field( '${mb.id}_action', '${mb.id}_nonce' );
+                    $value = get_post_meta( $post->ID, '_${mb.id}_key', true );
+                    echo '<p><label for="${mb.id}_field">' . __( 'Description for this field', '${data.textDomain}' ) . '</label></p>';
+                    echo '<input type="text" id="${mb.id}_field" name="${mb.id}_field" value="' . esc_attr( $value ) . '" class="widefat" />';
                 },
                 '${mb.screen || 'post'}'
             );
@@ -108,14 +109,29 @@ export const metaBoxCode = (data, metaBoxes) => {
 
 export const settingsCode = (data, settings) => {
     let code = ``;
-    if (settings.length > 0) {
-        code += `        add_action( 'admin_init', function() {\n`;
+    if (settings && settings.length > 0) {
+        code += `
+        add_action( 'admin_init', function() {\n`;
         settings.forEach(s => {
             code += `            register_setting( '${s.group || 'general'}', '${s.name}' );\n`;
             code += `            add_settings_section( '${s.name}_section', '${s.title}', null, '${s.page || 'general'}' );\n`;
         });
         code += `        } );\n`;
     }
+    return code;
+};
+
+export const userRoleCode = (data, roles) => {
+    let code = ``;
+    roles.forEach(r => {
+        if (!r.role) return;
+        const caps = r.caps.split(',').reduce((acc, cap) => {
+            acc[cap.trim()] = true;
+            return acc;
+        }, {});
+        code += `
+        add_role( '${r.role}', __( '${r.name || r.role}', '${data.textDomain}' ), ${JSON.stringify(caps).replace(/"/g, "'")} );\n`;
+    });
     return code;
 };
 
@@ -133,19 +149,6 @@ export const restCallbackCode = (data, callbacks) => {
                 return current_user_can( 'manage_options' );
             },
         ] );\n`;
-    });
-    return code;
-};
-export const userRoleCode = (data, roles) => {
-    let code = ``;
-    roles.forEach(r => {
-        if (!r.role) return;
-        const caps = r.caps.split(',').reduce((acc, cap) => {
-            acc[cap.trim()] = true;
-            return acc;
-        }, {});
-        code += `
-        add_role( '${r.role}', __( '${r.name || r.role}', '${data.textDomain}' ), ${JSON.stringify(caps).replace(/"/g, "'")} );\n`;
     });
     return code;
 };

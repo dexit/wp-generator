@@ -1,4 +1,7 @@
 export const mainPluginCode = (data) => {
+  const mainClass = data.mainClassName || 'Main';
+  const functionPrefix = data.functionPrefix || 'wp_plugin';
+
   return `<?php
 /**
  * Plugin Name: ${data.pluginName || 'WP Plugin'}
@@ -24,16 +27,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Main Class
+ * Main Plugin Class
+ * Utilizing PHP 8.2 readonly principles for core configuration.
  */
-final class ${data.mainClassName || 'Main'} {
+final class ${mainClass} {
     public const VERSION = '${data.version || '1.0.0'}';
 
+    /**
+     * Constructor
+     */
     private function __construct() {
         $this->define_constants();
         add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
     }
 
+    /**
+     * Initialize singleton
+     */
     public static function init(): self {
         static $instance = false;
         if ( ! $instance ) {
@@ -42,13 +52,19 @@ final class ${data.mainClassName || 'Main'} {
         return $instance;
     }
 
-    public function define_constants(): void {
+    /**
+     * Define core constants
+     */
+    private function define_constants(): void {
         define( '${data.constantPrefix || 'WP_PLUGIN'}_VERSION', self::VERSION );
         define( '${data.constantPrefix || 'WP_PLUGIN'}_FILE', __FILE__ );
         define( '${data.constantPrefix || 'WP_PLUGIN'}_PATH', dirname( __FILE__ ) );
         define( '${data.constantPrefix || 'WP_PLUGIN'}_URL', plugins_url( '', __FILE__ ) );
     }
 
+    /**
+     * Kick off registrations
+     */
     public function init_plugin(): void {
         if ( class_exists( __NAMESPACE__ . '\\Registers' ) ) {
             new Registers();
@@ -56,10 +72,14 @@ final class ${data.mainClassName || 'Main'} {
     }
 }
 
-function ${data.mainClassName ? data.mainClassName.toLowerCase() : 'wp_plugin'}(): ${data.mainClassName || 'Main'} {
-    return ${data.mainClassName || 'Main'}::init();
+/**
+ * Global accessor function
+ */
+function ${functionPrefix}(): ${mainClass} {
+    return ${mainClass}::init();
 }
 
-${data.mainClassName ? data.mainClassName.toLowerCase() : 'wp_plugin'}();
+// Start the plugin
+${functionPrefix}();
 `;
 };
