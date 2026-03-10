@@ -6,15 +6,42 @@ import { slug } from '../utils/helpers';
 
 export const useFileTree = (state) => {
     return useMemo(() => {
-        const { general, postTypes, taxonomies, adminScreens, settings, restCallbacks, shortcodes, metaBoxes, userRoles, assets, hasBlocks, blockName, blockTitle } = state;
+        const { general, postTypes, taxonomies, adminScreens, settings, restCallbacks, shortcodes, metaBoxes, userRoles, assets, tables, mainMenu, hasBlocks, blockName, blockTitle } = state;
         const pluginSlug = slug(general.pluginName) || 'plugin-name';
 
         const tree = [
             { id: 'root', type: 'pluginName', directory: true, name: pluginSlug, parent_id: null },
             { id: 'root_includes', type: 'includes_dir', directory: true, name: 'includes', parent_id: 'root' },
+            { id: 'root_admin', type: 'admin_dir', directory: true, name: 'Admin', parent_id: 'root_includes' },
+            { id: 'admin_views', type: 'views_dir', directory: true, name: 'views', parent_id: 'root_admin' },
+            { id: 'root_traits', type: 'traits_dir', directory: true, name: 'Traits', parent_id: 'root_includes' },
             {
                 id: 'root_plugin_main', type: 'php', file: true, name: pluginSlug + '.php', parent_id: 'root',
                 value: () => CodeBase.mainPluginCode(general)
+            },
+            {
+                id: 'root_composer', type: 'json', file: true, name: 'composer.json', parent_id: 'root',
+                value: () => CodeBase.composerCode(general)
+            },
+            {
+                id: 'inc_functions', type: 'php', file: true, name: 'functions.php', parent_id: 'root_includes',
+                value: () => CodeBase.functionsCode(general, tables)
+            },
+            {
+                id: 'inc_installer', type: 'php', file: true, name: 'Installer.php', parent_id: 'root_admin',
+                value: () => CodeBase.installerCode(general, tables)
+            },
+            {
+                id: 'inc_admin', type: 'php', file: true, name: 'Admin.php', parent_id: 'root_includes',
+                value: () => CodeBase.adminCode(general, tables)
+            },
+            {
+                id: 'inc_menu', type: 'php', file: true, name: 'Menu.php', parent_id: 'root_admin',
+                value: () => CodeBase.menuCode(general, tables, mainMenu)
+            },
+            {
+                id: 'inc_trait_error', type: 'php', file: true, name: 'Form_Error.php', parent_id: 'root_traits',
+                value: () => CodeBase.formErrorCode(general)
             },
             {
                 id: 'inc_registers', type: 'php', file: true, name: 'Registers.php', parent_id: 'root_includes',
@@ -33,6 +60,38 @@ export const useFileTree = (state) => {
                 }
             }
         ];
+
+        tables.forEach(table => {
+            if (table.settings && table.settings.adminPanel && table.settings.crudClassName) {
+                const className = table.settings.crudClassName;
+                const filePrefix = table.settings.fileNamePrefix || slug(className);
+
+                tree.push({
+                    id: `admin_handler_${className}`, type: 'php', file: true, name: `${className}.php`, parent_id: 'root_admin',
+                    value: () => CodeBase.dynamicMenuPageHandler(general, table)
+                });
+
+                tree.push({
+                    id: `admin_list_${className}`, type: 'php', file: true, name: `${className}_List.php`, parent_id: 'root_admin',
+                    value: () => CodeBase.listTableCode(className + '_List', general, table)
+                });
+
+                tree.push({
+                    id: `view_list_${className}`, type: 'php', file: true, name: `${filePrefix}-list.php`, parent_id: 'admin_views',
+                    value: () => CodeBase.adminViewCode('list', general, table)
+                });
+
+                tree.push({
+                    id: `view_new_${className}`, type: 'php', file: true, name: `${filePrefix}-new.php`, parent_id: 'admin_views',
+                    value: () => CodeBase.adminViewCode('new', general, table)
+                });
+
+                tree.push({
+                    id: `view_edit_${className}`, type: 'php', file: true, name: `${filePrefix}-edit.php`, parent_id: 'admin_views',
+                    value: () => CodeBase.adminViewCode('edit', general, table)
+                });
+            }
+        });
 
         if (hasBlocks) {
             tree.push({ id: 'root_src', type: 'src_dir', directory: true, name: 'src', parent_id: 'root' });
