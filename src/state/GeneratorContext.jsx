@@ -22,6 +22,11 @@ export const GeneratorProvider = ({ children }) => {
     const [userRoles, setUserRoles] = useState([]);
     const [assets, setAssets] = useState({ css: [], js: [] });
 
+    const [tables, setTables] = useState([]);
+    const [mainMenu, setMainMenu] = useState({
+        pageTitle: '', menuTitle: '', capability: 'manage_options', pageSlug: ''
+    });
+
     const [hasBlocks, setHasBlocks] = useState(false);
     const [blockName, setBlockName] = useState('example-block');
     const [blockTitle, setBlockTitle] = useState('Example Block');
@@ -44,6 +49,10 @@ export const GeneratorProvider = ({ children }) => {
         });
     };
 
+    const updateMainMenu = (key, val) => {
+        setMainMenu(prev => ({ ...prev, [key]: val }));
+    };
+
     const value = {
         general, updateGeneral,
         postTypes, setPostTypes,
@@ -55,6 +64,8 @@ export const GeneratorProvider = ({ children }) => {
         metaBoxes, setMetaBoxes,
         userRoles, setUserRoles,
         assets, setAssets,
+        tables, setTables,
+        mainMenu, updateMainMenu,
         hasBlocks, setHasBlocks,
         blockName, setBlockName,
         blockTitle, setBlockTitle,

@@ -1,6 +1,8 @@
 import React from 'react';
 import General from './General/index.jsx';
 import Advanced from './Advanced/index.jsx';
+import MainMenu from './MainMenu/index.jsx';
+import DatabaseTables from './DatabaseTables/index.jsx';
 import Shortcodes from './Shortcodes/index.jsx';
 import MetaBoxes from './MetaBoxes/index.jsx';
 import PostType from './PostType/index.jsx';
@@ -17,6 +19,8 @@ const FormInputs = () => {
         <div className="form-inputs">
             <General />
             <Advanced />
+            <MainMenu />
+            <DatabaseTables />
             <Shortcodes />
             <MetaBoxes />
             <PostType />
